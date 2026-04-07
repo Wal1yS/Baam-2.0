@@ -5,6 +5,8 @@ import com.example.baam2.dto.request.UserLoginDTO;
 import com.example.baam2.dto.request.UserUpdateDTO;
 import com.example.baam2.dto.response.UserDTO;
 import com.example.baam2.service.UserService;
+
+import org.springframework.boot.security.autoconfigure.SecurityProperties.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +17,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/user")
@@ -31,16 +36,43 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<UserDTO> signIn(@RequestBody UserLoginDTO loginDTO) { // Замените Object на LoginDTO и AuthResponseDTO
+    @PostMapping("/login")
+    public ResponseEntity<UserDTO> signIn(@RequestBody UserLoginDTO loginDTO, HttpServletRequest request) { // Замените Object на LoginDTO и AuthResponseDTO
+        UserDTO response = userService.loginUser(loginDTO);
+
+        //old session invalidation logic
+        HttpSession existingSession = request.getSession(false);
+        if (existingSession != null) {
+            existingSession.invalidate();
+        }
+        //new session creation logic
+        HttpSession session = request.getSession(true);
+        session.setAttribute("id", response.getId());
+        session.setAttribute("role", response.getRole());
+
         return ResponseEntity.ok()
-                .body(userService.loginUser(loginDTO));
+                .body(response);
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO) {
         return ResponseEntity.status(201)
                 .body(userService.createUser(userCreateDTO));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Long userId = (Long) session.getAttribute("id");
+        if (userId == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
     @DeleteMapping("/{id}")
