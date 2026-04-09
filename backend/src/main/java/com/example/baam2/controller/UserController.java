@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<UserDTO> signIn(@RequestBody UserLoginDTO loginDTO) { // Замените Object на LoginDTO и AuthResponseDTO
+    public ResponseEntity<UserDTO> signIn(@RequestBody UserLoginDTO loginDTO) {
         return ResponseEntity.ok()
                 .body(userService.loginUser(loginDTO));
     }

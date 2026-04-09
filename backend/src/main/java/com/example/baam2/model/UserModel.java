@@ -21,8 +21,4 @@ public class UserModel {
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "role")
-    private String role;
-
 }
