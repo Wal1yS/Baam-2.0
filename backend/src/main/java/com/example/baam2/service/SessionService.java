@@ -59,10 +59,14 @@ public class SessionService {
 
     @Transactional
     public void updateSessionName(Long id, SessionUpdateDTO request){
-        if (!(sessionRepository.existsById(id)))
-            throw new CustomException("ID_NOT_EXIST","Session id does not exist");
-        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow();
+        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow(() -> new CustomException("ID_NOT_EXIST","Session id does not exist"));
         sessionModel.setTitle(request.title());
+    }
+
+    @Transactional
+    public void closeSession(Long id){
+        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow(() -> new CustomException("ID_NOT_EXIST","Session id does not exist"));
+        sessionModel.setActive(false);
     }
 
     public List<SessionResponseDTO> getAllSessions(){
