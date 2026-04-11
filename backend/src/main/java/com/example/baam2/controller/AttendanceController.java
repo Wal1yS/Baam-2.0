@@ -11,6 +11,7 @@ import com.example.baam2.repository.SessionRepository;
 import com.example.baam2.repository.UserRepository;
 import com.example.baam2.service.AttendanceService;
 import com.example.baam2.service.SessionService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class AttendanceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<AttendanceResponseDTO> createAttendance(@RequestBody AttendanceCreateDTO attendanceCreateDTO) {
+    public ResponseEntity<AttendanceResponseDTO> createAttendance(@Valid @RequestBody AttendanceCreateDTO attendanceCreateDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.createAttendance(attendanceCreateDTO));
     }
 

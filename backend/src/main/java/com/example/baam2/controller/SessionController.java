@@ -7,6 +7,7 @@ import com.example.baam2.model.UserModel;
 import com.example.baam2.repository.SessionRepository;
 import com.example.baam2.repository.UserRepository;
 import com.example.baam2.service.SessionService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class SessionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<SessionResponseDTO> createSession(@RequestBody SessionCreateDTO sessionCreateDTO) {
+    public ResponseEntity<SessionResponseDTO> createSession(@Valid @RequestBody SessionCreateDTO sessionCreateDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.createSession(sessionCreateDTO));
     }
 
@@ -38,7 +39,7 @@ public class SessionController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateSession(@PathVariable Long id,@RequestBody SessionUpdateDTO sessionUpdateDTO) {
+    public ResponseEntity<Void> updateSession(@PathVariable Long id,@Valid @RequestBody SessionUpdateDTO sessionUpdateDTO) {
         sessionService.updateSessionName(id, sessionUpdateDTO);
         return ResponseEntity.noContent().build();
     }

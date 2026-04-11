@@ -5,6 +5,7 @@ import com.example.baam2.dto.request.UserLoginDTO;
 import com.example.baam2.dto.request.UserUpdateDTO;
 import com.example.baam2.dto.response.UserDTO;
 import com.example.baam2.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -33,13 +34,13 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<UserDTO> signIn(@RequestBody UserLoginDTO loginDTO) {
+    public ResponseEntity<UserDTO> signIn(@Valid @RequestBody UserLoginDTO loginDTO) {
         return ResponseEntity.ok()
                 .body(userService.loginUser(loginDTO));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateDTO userCreateDTO) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserCreateDTO userCreateDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(userCreateDTO));
     }
@@ -51,7 +52,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserUpdateDTO userUpdateDTO) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDTO userUpdateDTO) {
         return ResponseEntity.ok(userService.updateUser(id, userUpdateDTO));
     }
 
