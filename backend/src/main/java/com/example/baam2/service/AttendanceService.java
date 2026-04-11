@@ -37,9 +37,25 @@ public class AttendanceService {
         AttendanceModel attendanceModel = new AttendanceModel();
 
         attendanceModel.setUser(userRepository.findById(request.userId()).orElseThrow( () -> new CustomException("USER_ID_NOT_EXIST","User id does not exist")));
-        attendanceModel.setSession(sessionRepository.findById(request.sessionId()).orElseThrow(() -> new CustomException("SESSION_ID_NOT_EXIST","SESSION id does not exist")));
+
+        var session = sessionRepository.findById(request.sessionId()).orElseThrow(() -> new CustomException("SESSION_ID_NOT_EXIST","SESSION id does not exist"));
+        attendanceModel.setSession(session);
+
         if (!(attendanceModel.getSession().isActive())) throw new CustomException("SESSION_IS_CLOSED", "Session is already closed");
         attendanceModel.setTimestamp(LocalDateTime.now());
+
+        if (session.getLatitude() != null && session.getLongitude() != null && session.getAllowedRadius() != null) {
+            if (request.latitude() == null || request.longitude() == null) {
+                throw new CustomException("COORDINATES_ARE_NULL", "User coordinates are required for this session");
+            }
+
+            boolean inClass = isInClass(session.getLatitude(), session.getLongitude(), session.getAllowedRadius(),
+                    request.latitude(), request.longitude());
+            if (!inClass)
+                throw new CustomException("OUT_OF_ATTENDANCE_RADIUS", "User is out of attendance radius");
+
+        }
+
         return mapToDTO(attendanceRepository.save(attendanceModel));
     }
 
@@ -70,5 +86,20 @@ public class AttendanceService {
                 attendanceModel.getId(),
                 attendanceModel.getTimestamp()
         );
+    }
+
+    private boolean isInClass(Double originalLat, Double originalLong, Double allowedRadius, Double studentLat, Double studentLong) {
+        final int EARTH_RADIUS_METERS = 6371000;
+
+        double dLat = Math.toRadians(originalLat - studentLat);
+        double dLon = Math.toRadians(originalLong - studentLong);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(studentLat)) * Math.cos(Math.toRadians(originalLat)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = EARTH_RADIUS_METERS * c;
+
+        return distance <= allowedRadius;
     }
 }

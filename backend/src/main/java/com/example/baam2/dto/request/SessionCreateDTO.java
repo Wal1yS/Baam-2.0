@@ -2,5 +2,8 @@ package com.example.baam2.dto.request;
 
 public record SessionCreateDTO (
     String title,
-    Long ownerId
+    Long ownerId,
+    Double latitude,
+    Double longitude,
+    Double allowedRadius
 ){}

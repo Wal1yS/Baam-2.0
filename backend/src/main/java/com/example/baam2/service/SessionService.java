@@ -45,6 +45,10 @@ public class SessionService {
         sessionModel.setActive(true);
         sessionModel.setCreateAt(LocalDateTime.now());
 
+        sessionModel.setLatitude(request.latitude());
+        sessionModel.setLongitude(request.longitude());
+        sessionModel.setAllowedRadius(request.allowedRadius());
+
         return mapToDTO(sessionRepository.save(sessionModel));
     }
 
