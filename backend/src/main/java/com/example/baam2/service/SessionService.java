@@ -29,11 +29,6 @@ public class SessionService {
     }
 
     public SessionResponseDTO createSession(SessionCreateDTO request){
-        if (request.title() == null || request.title().isEmpty())
-            throw new CustomException("TITLE_IS_NULL","Session title cannot be null or empty");
-        if (request.ownerId() == null)
-            throw new CustomException("OWNER_ID_IS_NULL","Session owner id cannot be null or empty");
-
         SessionModel sessionModel = new SessionModel();
 
         sessionModel.setTitle(request.title());

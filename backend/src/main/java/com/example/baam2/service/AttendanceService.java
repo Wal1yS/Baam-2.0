@@ -27,10 +27,6 @@ public class AttendanceService {
     }
 
     public AttendanceResponseDTO createAttendance(AttendanceCreateDTO request){
-        if (request.userId() == null)
-            throw new CustomException("USER_ID_IS_NULL","User id cannot be null");
-        if (request.sessionId() == null)
-            throw new CustomException("SESSION_ID_IS_NULL","Session id cannot be null");
         if (attendanceRepository.existsByUserIdAndSessionId(request.userId(), request.sessionId()))
             throw new CustomException("USER_ALREADY_ATTENDED_SESSION", "User with this this id has already attended session with this id");
 
