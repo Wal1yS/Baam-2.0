@@ -1,4 +1,4 @@
-name: Baam2.0 CI/CD Pipeline
+name: Server Deploy
 
 on:
     push:

@@ -1,0 +1,34 @@
+name: Pre-Production Build Tests
+
+on:
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    test-backend-build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Code Clone
+              uses: actions/checkout@v4
+
+            - name: Build Backend Docker Image
+              uses: docker/build-push-action@v5
+              with:
+                context: ./backend
+                push: false
+                tags: baam2-backend:test
+
+    test-frontend-build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Code Clone
+              uses: actions/checkout@v4
+
+            - name: Build Frontend Docker Image
+              uses: docker/build-push-action@v5
+              with:
+                context: ./frontend
+                push: false
+                tags: baam2-frontend:test
