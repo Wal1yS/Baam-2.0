@@ -69,4 +69,7 @@ jobs:
                 cd /home/runner/baam2.0
                 docker compose pull
                 docker compose up -d
+
+            - name: Clean Up Unused Docker Images and Containers
+              run: docker system prune -f
                   
