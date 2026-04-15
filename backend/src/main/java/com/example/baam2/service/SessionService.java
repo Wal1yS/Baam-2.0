@@ -83,10 +83,10 @@ public class SessionService {
 
     public List<SessionResponseDTO> getAllSessions(){
         return sessionRepository.findAll().stream().map(sessionModel ->
-                new SessionResponseDTO(
-                        sessionModel.getId(),
-                        sessionModel.getTitle(),
-                        sessionModel.getCreateAt()))
+                        new SessionResponseDTO(
+                                sessionModel.getId(),
+                                sessionModel.getTitle(),
+                                sessionModel.getCreateAt()))
                 .collect(Collectors.toList());
     }
 
@@ -102,3 +102,4 @@ public class SessionService {
         );
     }
 }
+

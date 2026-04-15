@@ -69,17 +69,17 @@ public class AttendanceService {
 
     public List<UserAttendanceDTO> getAllUserAttendance(Long id){
         return attendanceRepository.findAllByUserId(id).stream().map(attendanceModel -> new UserAttendanceDTO(
-                attendanceModel.getId(),
-                attendanceModel.getSession().getTitle(),
-                attendanceModel.getSession().getOwner().getEmail(),
-                attendanceModel.getTimestamp()))
+                        attendanceModel.getId(),
+                        attendanceModel.getSession().getTitle(),
+                        attendanceModel.getSession().getOwner().getEmail(),
+                        attendanceModel.getTimestamp()))
                 .collect(Collectors.toList());
     }
 
     public List<AttendanceResponseDTO> getAllAttendance(){
         return attendanceRepository.findAll().stream().map(attendanceModel -> new AttendanceResponseDTO(
-                attendanceModel.getId(),
-                attendanceModel.getTimestamp()))
+                        attendanceModel.getId(),
+                        attendanceModel.getTimestamp()))
                 .collect(Collectors.toList());
     }
 
