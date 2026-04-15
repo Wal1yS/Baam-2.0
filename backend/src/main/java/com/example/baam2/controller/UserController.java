@@ -68,9 +68,9 @@ public class UserController {
         session.setAttribute("id", response.id());
 
         Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(
-            response.id().toString(),
-            null,
-            Collections.emptyList());
+                response.id().toString(),
+                null,
+                Collections.emptyList());
 
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);

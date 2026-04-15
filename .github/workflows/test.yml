@@ -1,0 +1,69 @@
+name: Pre-Production Tests
+
+on:
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    backend-test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Code Clone
+              uses: actions/checkout@v4
+
+            - name: Java 21 Setup
+              uses: actions/setup-java@v4
+              with:
+                java-version: '21'
+                distribution: 'temurin'
+                cache: 'maven'
+
+            - name: Spring Boot Testing
+              run: |
+                cd backend
+                chmod +x mvnw
+                ./mvnw test
+
+            - name: Build Backend Docker Image
+              uses: docker/build-push-action@v5
+              with:
+                context: ./backend
+                push: false
+                tags: baam2-backend:test
+
+    frontend-test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Code Clone
+              uses: actions/checkout@v4
+
+            - name: Node.js Installation
+              uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+                cache: 'npm'
+                cache-dependency-path: './frontend/package-lock.json'
+
+            - name: Dependencies Installation
+              run: |
+                cd frontend
+                npm ci
+
+            - name: Lint Frontend Code
+              run: |
+                cd frontend
+                npm run lint
+
+            - name: Test Frontend Build (without Docker)
+              run: |
+                cd frontend
+                npm run build
+
+            - name: Build Frontend Docker Image
+              uses: docker/build-push-action@v5
+              with:
+                context: ./frontend
+                push: false
+                tags: baam2-frontend:test
