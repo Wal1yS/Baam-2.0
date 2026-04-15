@@ -11,4 +11,7 @@ import java.util.Optional;
 @Repository
 public interface SessionRepository extends JpaRepository<SessionModel, Long> {
     List<SessionModel> findAllByOwner_Id(Long id);
+
+    @Query("SELECT s.id FROM SessionModel s WHERE s.isActive = true")
+    List<Long> findAllActiveIds();
 }

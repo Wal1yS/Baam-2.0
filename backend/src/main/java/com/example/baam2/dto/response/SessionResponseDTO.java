@@ -4,6 +4,5 @@ import java.time.LocalDateTime;
 public record SessionResponseDTO (
     Long id,
     String title,
-    String qrToken,
     LocalDateTime createdAt
 ){}

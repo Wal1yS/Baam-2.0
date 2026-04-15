@@ -55,6 +55,11 @@ public class SessionController {
         return ResponseEntity.ok().body(sessionService.getAllSessions());
     }
 
+    @GetMapping("/alla")
+    public ResponseEntity<List<Long>> getAllaSessions(){
+        return ResponseEntity.ok().body(sessionService.getAllaSessions());
+    }
+
     @PostMapping("/test")
     public ResponseEntity<Void> createUser(){
         UserModel userModel = new UserModel();

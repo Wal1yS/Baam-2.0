@@ -10,6 +10,7 @@ import com.example.baam2.model.UserModel;
 import com.example.baam2.repository.AttendanceRepository;
 import com.example.baam2.repository.SessionRepository;
 import com.example.baam2.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -57,6 +58,7 @@ public class UserService {
         return mapToDTO(userRepository.save(newUser));
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         if (!userRepository.existsById(id))
             throw new CustomException("ID_NOT_EXIST","User id does not exist");
@@ -85,6 +87,10 @@ public class UserService {
         );
 
         return mapToDTO(userRepository.save(userToUpdate));
+    }
+
+    public List<UserDTO> getAllUsers(){
+        return userRepository.findAll().stream().map( user -> mapToDTO(user)).toList();
     }
 
     private UserDTO mapToDTO(UserModel userModel) {

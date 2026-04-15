@@ -1,16 +1,11 @@
 package com.example.baam2.controller;
 
 import com.example.baam2.dto.request.AttendanceCreateDTO;
-import com.example.baam2.dto.request.SessionCreateDTO;
-import com.example.baam2.dto.request.SessionUpdateDTO;
 import com.example.baam2.dto.response.AttendanceResponseDTO;
-import com.example.baam2.dto.response.SessionResponseDTO;
 import com.example.baam2.dto.response.UserAttendanceDTO;
-import com.example.baam2.model.UserModel;
-import com.example.baam2.repository.SessionRepository;
-import com.example.baam2.repository.UserRepository;
 import com.example.baam2.service.AttendanceService;
-import com.example.baam2.service.SessionService;
+import com.example.baam2.service.QRTokenService;
+import com.example.baam2.dto.request.QrScanRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +18,11 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AttendanceController {
     private final AttendanceService attendanceService;
+    private final QRTokenService qrTokenService;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, QRTokenService qrTokenService) {
         this.attendanceService = attendanceService;
+        this.qrTokenService = qrTokenService;
     }
 
     @PostMapping("/create")
@@ -49,4 +46,17 @@ public class AttendanceController {
         return ResponseEntity.ok().body(attendanceService.getAllAttendance());
     }
 
+    @PostMapping("/scan")
+    public ResponseEntity<String> scanQrCode(@Valid @RequestBody QrScanRequestDTO qrScanRequestDTO){
+        Long sessionId = qrTokenService.validateTokenAndGetSesionId(qrScanRequestDTO.token());
+
+        AttendanceCreateDTO createDTO = new AttendanceCreateDTO(
+                sessionId,
+                qrScanRequestDTO.userId()
+        );
+
+        attendanceService.createAttendance(createDTO);
+
+        return ResponseEntity.ok().body("Success!");
+    }
 }

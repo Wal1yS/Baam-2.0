@@ -32,17 +32,16 @@ public class SessionService {
         SessionModel sessionModel = new SessionModel();
 
         sessionModel.setTitle(request.title());
-        sessionModel.setOwner(userRepository.findById(request.ownerId()).orElseThrow(() -> new CustomException("OWNER_ID_NOT_EXIST","Session owner id does not exist")));
+        sessionModel.setOwner(userRepository.findById(request.ownerId()).orElseThrow(() ->
+                new CustomException("OWNER_ID_NOT_EXIST","Session owner id does not exist")));
 
-        String qrToken = "QR link";
-
-        sessionModel.setQrToken(qrToken);
         sessionModel.setActive(true);
         sessionModel.setCreateAt(LocalDateTime.now());
 
         return mapToDTO(sessionRepository.save(sessionModel));
     }
 
+    @Transactional
     public void deleteSession(Long id){
         if (!(sessionRepository.existsById(id)))
             throw new CustomException("ID_NOT_EXIST","Session id does not exist");
@@ -54,25 +53,36 @@ public class SessionService {
 
     @Transactional
     public void updateSessionName(Long id, SessionUpdateDTO request){
-        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow(() -> new CustomException("ID_NOT_EXIST","Session id does not exist"));
+        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow(() ->
+                new CustomException("ID_NOT_EXIST","Session id does not exist"));
         sessionModel.setTitle(request.title());
     }
 
     @Transactional
     public void closeSession(Long id){
-        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow(() -> new CustomException("ID_NOT_EXIST","Session id does not exist"));
+        SessionModel sessionModel = sessionRepository.findById(id).orElseThrow(() ->
+                new CustomException("ID_NOT_EXIST","Session id does not exist"));
+        if (!(sessionModel.isActive())) throw new CustomException("SESSION_ALREADY_CLOSE", "This session is already closed");
         sessionModel.setActive(false);
     }
 
     public List<SessionResponseDTO> getAllSessions(){
-        return sessionRepository.findAll().stream().map(sessionModel -> new SessionResponseDTO(sessionModel.getId(),sessionModel.getTitle(), sessionModel.getQrToken(), sessionModel.getCreateAt())).collect(Collectors.toList());
+        return sessionRepository.findAll().stream().map(sessionModel ->
+                new SessionResponseDTO(
+                        sessionModel.getId(),
+                        sessionModel.getTitle(),
+                        sessionModel.getCreateAt()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Long> getAllaSessions(){
+        return sessionRepository.findAllActiveIds();
     }
 
     private SessionResponseDTO mapToDTO(SessionModel sessionModel) {
         return new SessionResponseDTO(
                 sessionModel.getId(),
                 sessionModel.getTitle(),
-                sessionModel.getQrToken(),
                 sessionModel.getCreateAt()
         );
     }
