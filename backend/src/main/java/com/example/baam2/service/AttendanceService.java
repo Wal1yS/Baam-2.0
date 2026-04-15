@@ -37,7 +37,7 @@ public class AttendanceService {
         AttendanceModel attendanceModel = new AttendanceModel();
 
         attendanceModel.setUser(userRepository.findById(request.userId()).orElseThrow( () -> new CustomException("USER_ID_NOT_EXIST","User id does not exist")));
-        var session = sessionRepository.findById(request.sessionId()).orElseThrow(() -> new CustomException("SESSION_ID_NOT_EXIST","SESSION id does not exist"));
+        SessionModel session = sessionRepository.findById(request.sessionId()).orElseThrow(() -> new CustomException("SESSION_ID_NOT_EXIST","SESSION id does not exist"));
         attendanceModel.setSession(session);
         if (!(attendanceModel.getSession().isActive())) throw new CustomException("SESSION_IS_CLOSED", "Session is already closed");
         attendanceModel.setTimestamp(LocalDateTime.now());
