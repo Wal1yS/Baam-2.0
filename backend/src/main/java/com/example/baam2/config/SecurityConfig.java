@@ -31,9 +31,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf
                 .csrfTokenRepository(csrfTokenRepository())
-                .ignoringRequestMatchers("/user/login", "/user/register", "/auth/csrf"))
+                .ignoringRequestMatchers("/user/login", "/user/register"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login", "/user/register", "/auth/csrf" ).permitAll()
+                        .requestMatchers("/user/login", "/user/register" ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
@@ -51,7 +51,7 @@ public class SecurityConfig {
                     .xssProtection(xss -> xss.disable())
                 )
                 .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                    .sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
 
@@ -74,6 +74,11 @@ public class SecurityConfig {
     @Bean
     public CookieCsrfTokenRepository csrfTokenRepository() {
         CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+
+        repository.setCookieCustomizer(cookie -> cookie
+                .secure(false) // Set to true in production when using HTTPS
+                .sameSite("Lax"));
+
         repository.setHeaderName("X-CSRF-TOKEN");
         repository.setCookiePath("/");
         return repository;

@@ -25,6 +25,8 @@ public class SessionModel {
     private String qrToken;
     private boolean isActive;
     private LocalDateTime createAt;
+
+    private Double latitude;
+    private Double longitude;
+    private Double allowedRadius;
 }
-
-

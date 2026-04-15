@@ -26,4 +26,3 @@ public class AttendanceModel {
 
     private LocalDateTime timestamp;
 }
-

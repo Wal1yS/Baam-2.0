@@ -27,29 +27,36 @@ public class AttendanceService {
     }
 
     public AttendanceResponseDTO createAttendance(AttendanceCreateDTO request){
-        if (request.getUserId() == null)
+        if (request.userId() == null)
             throw new CustomException("USER_ID_IS_NULL","User id cannot be null");
-        if (request.getSessionId() == null)
+        if (request.sessionId() == null)
             throw new CustomException("SESSION_ID_IS_NULL","Session id cannot be null");
-        if (!(userRepository.existsById(request.getUserId())))
-            throw new CustomException("USER_ID_NOT_EXIST","User id does not exist");
-        if (!(sessionRepository.existsById(request.getSessionId())))
-            throw new CustomException("SESSION_ID_NOT_EXIST","SESSION id does not exist");
-        if (attendanceRepository.existsByUserIdAndSessionId(request.getUserId(), request.getSessionId()))
+        if (attendanceRepository.existsByUserIdAndSessionId(request.userId(), request.sessionId()))
             throw new CustomException("USER_ALREADY_ATTENDED_SESSION", "User with this this id has already attended session with this id");
 
         AttendanceModel attendanceModel = new AttendanceModel();
 
-        attendanceModel.setUser(userRepository.findById(request.getUserId()).orElseThrow());
-        attendanceModel.setSession(sessionRepository.findById(request.getSessionId()).orElseThrow());
+        attendanceModel.setUser(userRepository.findById(request.userId()).orElseThrow( () -> new CustomException("USER_ID_NOT_EXIST","User id does not exist")));
+
+        var session = sessionRepository.findById(request.sessionId()).orElseThrow(() -> new CustomException("SESSION_ID_NOT_EXIST","SESSION id does not exist"));
+        attendanceModel.setSession(session);
+
+        if (!(attendanceModel.getSession().isActive())) throw new CustomException("SESSION_IS_CLOSED", "Session is already closed");
         attendanceModel.setTimestamp(LocalDateTime.now());
-        attendanceModel = attendanceRepository.save(attendanceModel);
 
-        AttendanceResponseDTO response = new AttendanceResponseDTO();
+        if (session.getLatitude() != null && session.getLongitude() != null && session.getAllowedRadius() != null) {
+            if (request.latitude() == null || request.longitude() == null) {
+                throw new CustomException("COORDINATES_ARE_NULL", "User coordinates are required for this session");
+            }
 
-        response.setId(attendanceModel.getId());
-        response.setTimestamp(attendanceModel.getTimestamp());
-        return response;
+            boolean inClass = isInClass(session.getLatitude(), session.getLongitude(), session.getAllowedRadius(),
+                    request.latitude(), request.longitude());
+            if (!inClass)
+                throw new CustomException("OUT_OF_ATTENDANCE_RADIUS", "User is out of attendance radius");
+
+        }
+
+        return mapToDTO(attendanceRepository.save(attendanceModel));
     }
 
     public void deleteAttendance(Long id){
@@ -72,5 +79,27 @@ public class AttendanceService {
                 attendanceModel.getId(),
                 attendanceModel.getTimestamp()))
                 .collect(Collectors.toList());
+    }
+
+    private AttendanceResponseDTO mapToDTO(AttendanceModel attendanceModel) {
+        return new AttendanceResponseDTO(
+                attendanceModel.getId(),
+                attendanceModel.getTimestamp()
+        );
+    }
+
+    private boolean isInClass(Double originalLat, Double originalLong, Double allowedRadius, Double studentLat, Double studentLong) {
+        final int EARTH_RADIUS_METERS = 6371000;
+
+        double dLat = Math.toRadians(originalLat - studentLat);
+        double dLon = Math.toRadians(originalLong - studentLong);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(studentLat)) * Math.cos(Math.toRadians(originalLat)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = EARTH_RADIUS_METERS * c;
+
+        return distance <= allowedRadius;
     }
 }

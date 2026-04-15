@@ -7,9 +7,16 @@ import com.example.baam2.dto.response.UserDTO;
 import com.example.baam2.service.UserService;
 import com.example.baam2.service.EmailService;
 
+import java.util.Collections;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,8 +61,17 @@ public class UserController {
         }
         //new session creation logic
         HttpSession session = request.getSession(true);
-        session.setAttribute("id", response.getId());
-        session.setAttribute("role", response.getRole());
+        session.setAttribute("id", response.id());
+
+        Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(
+            response.id().toString(),
+            null,
+            Collections.emptyList());
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
         return ResponseEntity.ok()
                 .body(response);
@@ -66,9 +82,9 @@ public class UserController {
         UserDTO response = userService.createUser(userCreateDTO);
         // just for testing
         try {
-            emailService.sendWelcomeEmail(response.getEmail(), response.getRole());
+            emailService.sendWelcomeEmail(response.id());
         } catch (Exception ex) {
-            logger.warn("User {} created, but welcome email was not sent: {}", response.getEmail(), ex.getMessage());
+            logger.warn("User {} created, but welcome email was not sent: {}", response.id(), ex.getMessage());
         }
 
         return ResponseEntity.status(201)

@@ -1,12 +1,8 @@
 package com.example.baam2.dto.request;
-import lombok.Data;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class AttendanceCreateDTO {
-    private Long sessionId;
-    private Long userId;
-}
+public record AttendanceCreateDTO (
+    Long sessionId,
+    Long userId,
+    Double latitude,
+    Double longitude
+){}

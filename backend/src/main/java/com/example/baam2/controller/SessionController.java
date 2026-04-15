@@ -47,7 +47,6 @@ public class SessionController {
     public void createUser(){
         UserModel userModel = new UserModel();
         userModel.setEmail("1234567890");
-        userModel.setRole("STUDENT");
         userModel.setPassword("44444");
         userRepository.save(userModel);
     }

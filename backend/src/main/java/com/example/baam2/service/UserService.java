@@ -43,8 +43,7 @@ public class UserService {
         UserModel newUser = new UserModel(
                 null,
                 userCreateDTO.email(),
-                userCreateDTO.password(),
-                "ROLE"
+                userCreateDTO.password()
         );
         return mapToDTO(userRepository.save(newUser));
     }
@@ -62,8 +61,7 @@ public class UserService {
         UserModel userToUpdate = new UserModel(
                 id,
                 userEntity.getEmail(),
-                userUpdateDTO.password(),
-                userEntity.getRole()
+                userUpdateDTO.password()
         );
 
         return mapToDTO(userRepository.save(userToUpdate));
@@ -72,8 +70,7 @@ public class UserService {
     private UserDTO mapToDTO(UserModel userModel) {
         return new UserDTO(
                 userModel.getId(),
-                userModel.getEmail(),
-                userModel.getRole()
+                userModel.getEmail()
         );
     }
 }
