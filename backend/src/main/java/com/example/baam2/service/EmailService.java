@@ -18,12 +18,12 @@ public class EmailService {
     @Value("${spring.mail.properties.mail.smtp.from:${spring.mail.username}}")
     private String fromEmail;
 
-    public void sendWelcomeEmail(Long id) {
+    public void sendWelcomeEmail(String email) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
-        message.setTo(id.toString());
+        message.setTo(email);
         message.setSubject("Baam 2.0 Registration Successful");
-        message.setText("Hello " + id + ",\n\nWelcome to Baam 2.0!");
+        message.setText("Hello " + email + ",\n\nWelcome to Baam 2.0!");
         mailSender.send(message);
     }
 

@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/user")
@@ -82,12 +83,12 @@ public class UserController {
         UserDTO response = userService.createUser(userCreateDTO);
         // just for testing
         try {
-            emailService.sendWelcomeEmail(response.id());
+            emailService.sendWelcomeEmail(response.email());
         } catch (Exception ex) {
             logger.warn("User {} created, but welcome email was not sent: {}", response.id(), ex.getMessage());
         }
 
-        return ResponseEntity.status(201)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(response);
     }
 
@@ -95,12 +96,12 @@ public class UserController {
     public ResponseEntity<UserDTO> getMe(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Long userId = (Long) session.getAttribute("id");
         if (userId == null) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         return ResponseEntity.ok(userService.getUser(userId));
