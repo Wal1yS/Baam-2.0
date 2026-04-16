@@ -1,6 +1,6 @@
 import type { UserCreateDTO, UserDTO, UserLoginDTO } from '../types/Authentification';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8080';
 
 export async function loginUser(data: UserLoginDTO): Promise<UserDTO> {
     const response = await fetch(`${API_BASE_URL}/user/login`, {
