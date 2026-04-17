@@ -306,3 +306,136 @@ body {
   cursor: pointer;
   letter-spacing: 0.5px;
 }
+
+
+
+/* ===== DASHBOARD ===== */
+
+.dashboard-content {
+  width: 100%;
+}
+
+.session-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.session-form-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.session-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.session-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.session-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.session-help-text {
+  font-size: 13px;
+  color: #777;
+  margin-top: 4px;
+}
+
+.session-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.session-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.session-result-card {
+  background: #fafafa;
+  border: 1px solid #ececec;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.qr-placeholder {
+  width: min(100%, 320px);
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #bfbfbf;
+  border-radius: 12px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.qr-placeholder-inner {
+  text-align: center;
+  padding: 24px;
+}
+
+.qr-placeholder-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.qr-placeholder-text {
+  font-size: 14px;
+  color: #777;
+}
+
+.session-summary {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-primary-btn {
+  background: #4caf2f !important;
+  border-color: #4caf2f !important;
+}
+
+.session-primary-btn:hover,
+.session-primary-btn:focus {
+  background: #449d2a !important;
+  border-color: #449d2a !important;
+}
+
+.session-primary-btn:disabled {
+  background: #4caf2f !important;
+  border-color: #4caf2f !important;
+  opacity: 0.7;
+}
+
+.ant-switch.ant-switch-checked {
+  background: #4caf2f !important;
+}
+
+.ant-switch.ant-switch-checked:hover {
+  background: #449d2a !important;
+}
