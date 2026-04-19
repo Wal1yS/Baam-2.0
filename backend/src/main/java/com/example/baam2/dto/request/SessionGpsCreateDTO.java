@@ -10,12 +10,12 @@ public record SessionGpsCreateDTO(
         @NotNull(message ="Session owner id cannot be null or empty")
         Long ownerId,
 
-        @NotNull(message ="Latitude id cannot be null")
+        @NotNull(message ="Latitude cannot be null")
         Double latitude,
 
-        @NotNull(message ="Longitude id cannot be null")
+        @NotNull(message ="Longitude cannot be null")
         Double longitude,
 
-        @NotNull(message ="Session id cannot be null")
+        @NotNull(message ="Allowed Radius cannot be null")
         Double allowedRadius
 ){}

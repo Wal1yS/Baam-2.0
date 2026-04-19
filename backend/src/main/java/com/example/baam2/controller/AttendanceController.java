@@ -27,7 +27,7 @@ public class AttendanceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<AttendanceResponseDTO> createAttendance(@RequestBody AttendanceCreateDTO attendanceCreateDTO) {
+    public ResponseEntity<AttendanceResponseDTO> createAttendance(@Valid @RequestBody AttendanceCreateDTO attendanceCreateDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.createAttendance(attendanceCreateDTO));
     }
 

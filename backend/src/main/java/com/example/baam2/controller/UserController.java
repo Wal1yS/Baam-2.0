@@ -6,7 +6,6 @@ import com.example.baam2.dto.request.UserUpdateDTO;
 import com.example.baam2.dto.response.UserDTO;
 import com.example.baam2.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import com.example.baam2.service.EmailService;
 
 import java.util.Collections;
@@ -78,7 +77,7 @@ public class UserController {
         session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
 
         return ResponseEntity.ok()
-                .body(userService.loginUser(loginDTO));
+                .body(response);
     }
 
     @PostMapping("/register")

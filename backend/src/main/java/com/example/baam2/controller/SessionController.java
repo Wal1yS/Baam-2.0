@@ -5,7 +5,6 @@ import com.example.baam2.dto.request.SessionGpsCreateDTO;
 import com.example.baam2.dto.request.SessionUpdateDTO;
 import com.example.baam2.dto.response.SessionResponseDTO;
 import com.example.baam2.model.UserModel;
-import com.example.baam2.repository.SessionRepository;
 import com.example.baam2.repository.UserRepository;
 import com.example.baam2.service.SessionService;
 import jakarta.validation.Valid;
@@ -22,7 +21,7 @@ public class SessionController {
     private final SessionService sessionService;
     private final UserRepository userRepository;
 
-    public SessionController(SessionService sessionService, UserRepository userRepository, SessionRepository sessionRepository) {
+    public SessionController(SessionService sessionService, UserRepository userRepository) {
         this.sessionService = sessionService;
         this.userRepository = userRepository;
     }

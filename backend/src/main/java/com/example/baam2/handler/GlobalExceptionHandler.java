@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import com.example.baam2.exception.CustomException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -32,7 +29,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomExceptionDTO> handleValidationException(MethodArgumentNotValidException ex) {
-        CustomExceptionDTO errors = new CustomExceptionDTO("VALIDATION_ERROR", ex.getBindingResult().getFieldError().getDefaultMessage());
+        String errorMessage;
+        if (ex.getBindingResult().getFieldError().getDefaultMessage() == null || ex.getBindingResult().getFieldError().getDefaultMessage().isEmpty()){
+            errorMessage = "Null message";
+        }
+        else {
+            errorMessage = ex.getBindingResult().getFieldError().getDefaultMessage();
+        }
+        CustomExceptionDTO errors = new CustomExceptionDTO("VALIDATION_ERROR", errorMessage);
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 }
