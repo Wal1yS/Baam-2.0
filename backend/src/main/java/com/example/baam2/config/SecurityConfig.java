@@ -32,30 +32,30 @@ public class SecurityConfig {
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf
-                .csrfTokenRepository(csrfTokenRepository())
-            .csrfTokenRequestHandler(requestHandler)
-                .ignoringRequestMatchers("/user/login", "/user/register"))
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(csrfTokenRepository())
+                        .csrfTokenRequestHandler(requestHandler)
+                        .ignoringRequestMatchers("/user/login", "/user/register","/ws-baam/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/login", "/user/register" ).permitAll()
+                        .requestMatchers("/user/login", "/user/register", "/ws-baam/**" ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers
-                    .contentSecurityPolicy(csp -> csp.policyDirectives(
-                        // basic scp policy
-                        /** (Джарвис комменты, что бы не забыть что для чего)
-                         * deafault-src 'self' - разрешает загружать ресурсы только с того же домена, что и приложение
-                         * frame-ancestors 'none' - запрещает встраивать приложение в iframe
-                         * base-uri 'self' - разрешает использовать только URL-адреса из того же домена для базовых URI
-                         * object-src 'none' - запрещает загрузку плагинов и других объектов
-                        **/
-                        "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
-                    ))
-                    .frameOptions(frame -> frame.deny())
-                    .xssProtection(xss -> xss.disable())
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                // basic scp policy
+                                /** (Джарвис комменты, что бы не забыть что для чего)
+                                 * deafault-src 'self' - разрешает загружать ресурсы только с того же домена, что и приложение
+                                 * frame-ancestors 'none' - запрещает встраивать приложение в iframe
+                                 * base-uri 'self' - разрешает использовать только URL-адреса из того же домена для базовых URI
+                                 * object-src 'none' - запрещает загрузку плагинов и других объектов
+                                 **/
+                                "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'"
+                        ))
+                        .frameOptions(frame -> frame.deny())
+                        .xssProtection(xss -> xss.disable())
                 )
                 .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.NEVER))
+                        .sessionCreationPolicy(SessionCreationPolicy.NEVER))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
 
@@ -65,7 +65,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Collections.singletonList("http://localhost:5173")); // in future should be some domen (i guess) 
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*")); // Here should be front address or domen in future
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization", "X-CSRF-TOKEN"));
         configuration.setAllowCredentials(true);
@@ -74,6 +74,7 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 
     @Bean
     public CookieCsrfTokenRepository csrfTokenRepository() {

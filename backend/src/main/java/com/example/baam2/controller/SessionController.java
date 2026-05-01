@@ -1,12 +1,15 @@
 package com.example.baam2.controller;
 
 import com.example.baam2.dto.request.SessionCreateDTO;
+import com.example.baam2.dto.request.SessionGpsCreateDTO;
 import com.example.baam2.dto.request.SessionUpdateDTO;
 import com.example.baam2.dto.response.SessionResponseDTO;
 import com.example.baam2.model.UserModel;
-import com.example.baam2.repository.SessionRepository;
 import com.example.baam2.repository.UserRepository;
 import com.example.baam2.service.SessionService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,42 +21,62 @@ public class SessionController {
     private final SessionService sessionService;
     private final UserRepository userRepository;
 
-    public SessionController(SessionService sessionService, UserRepository userRepository, SessionRepository sessionRepository) {
+    public SessionController(SessionService sessionService, UserRepository userRepository) {
         this.sessionService = sessionService;
         this.userRepository = userRepository;
     }
 
     @PostMapping("/create")
-    public SessionResponseDTO createSession(@RequestBody SessionCreateDTO sessionCreateDTO) {
-        return sessionService.createSession(sessionCreateDTO);
+    public ResponseEntity<SessionResponseDTO> createSession(@Valid @RequestBody SessionCreateDTO sessionCreateDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.createSession(sessionCreateDTO));
+    }
+
+    @PostMapping("/create/geo")
+    public ResponseEntity<SessionResponseDTO> createGeoSession(@Valid @RequestBody SessionGpsCreateDTO sessionGpsCreateDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(sessionService.createGpsSession(sessionGpsCreateDTO));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSession(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSession(@PathVariable Long id) {
         sessionService.deleteSession(id);
+        return ResponseEntity.noContent().build();
+
     }
 
     @PatchMapping("/{id}")
-    public void updateSession(@PathVariable Long id,@RequestBody SessionUpdateDTO sessionUpdateDTO) {
+    public ResponseEntity<Void> updateSession(@PathVariable Long id,@Valid @RequestBody SessionUpdateDTO sessionUpdateDTO) {
         sessionService.updateSessionName(id, sessionUpdateDTO);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/close/{id}")
+    public ResponseEntity<Void> closeSession(@PathVariable Long id) {
+        sessionService.closeSession(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/all")
-    public List<SessionResponseDTO> getAllSessions(){
-        return sessionService.getAllSessions();
+    public ResponseEntity<List<SessionResponseDTO>> getAllSessions(){
+        return ResponseEntity.ok().body(sessionService.getAllSessions());
+    }
+
+    @GetMapping("/alla")
+    public ResponseEntity<List<Long>> getAllaSessions(){
+        return ResponseEntity.ok().body(sessionService.getAllaSessions());
     }
 
     @PostMapping("/test")
-    public void createUser(){
+    public ResponseEntity<Void> createUser(){
         UserModel userModel = new UserModel();
         userModel.setEmail("1234567890");
         userModel.setPassword("44444");
         userRepository.save(userModel);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/test")
-    public long getNumber(){
-        return userRepository.count();
+    public ResponseEntity<Long> getNumber(){
+        return ResponseEntity.ok().body(userRepository.count());
     }
 
 }

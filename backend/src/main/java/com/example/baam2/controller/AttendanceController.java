@@ -1,16 +1,15 @@
 package com.example.baam2.controller;
 
 import com.example.baam2.dto.request.AttendanceCreateDTO;
-import com.example.baam2.dto.request.SessionCreateDTO;
-import com.example.baam2.dto.request.SessionUpdateDTO;
+import com.example.baam2.dto.request.AttendanceGpsCreateDTO;
+import com.example.baam2.dto.request.QrScanRequestDTO;
 import com.example.baam2.dto.response.AttendanceResponseDTO;
-import com.example.baam2.dto.response.SessionResponseDTO;
 import com.example.baam2.dto.response.UserAttendanceDTO;
-import com.example.baam2.model.UserModel;
-import com.example.baam2.repository.SessionRepository;
-import com.example.baam2.repository.UserRepository;
 import com.example.baam2.service.AttendanceService;
-import com.example.baam2.service.SessionService;
+import com.example.baam2.service.QRTokenService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,29 +19,47 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AttendanceController {
     private final AttendanceService attendanceService;
+    private final QRTokenService qrTokenService;
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceService attendanceService, QRTokenService qrTokenService) {
         this.attendanceService = attendanceService;
+        this.qrTokenService = qrTokenService;
     }
 
     @PostMapping("/create")
-    public AttendanceResponseDTO createAttendance(@RequestBody AttendanceCreateDTO attendanceCreateDTO) {
-        return attendanceService.createAttendance(attendanceCreateDTO);
+    public ResponseEntity<AttendanceResponseDTO> createAttendance(@Valid @RequestBody AttendanceCreateDTO attendanceCreateDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(attendanceService.createAttendance(attendanceCreateDTO));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteAttendance(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAttendance(@PathVariable Long id) {
         attendanceService.deleteAttendance(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    private List<UserAttendanceDTO> getAllUserAttendance(@PathVariable Long id){
-        return attendanceService.getAllUserAttendance(id);
+    public ResponseEntity<List<UserAttendanceDTO>> getAllUserAttendance(@PathVariable Long id){
+        return ResponseEntity.ok().body(attendanceService.getAllUserAttendance(id));
     }
 
     @GetMapping("/all")
-    public List<AttendanceResponseDTO> getAllAttendance(){
-        return attendanceService.getAllAttendance();
+    public ResponseEntity<List<AttendanceResponseDTO>> getAllAttendance(){
+        return ResponseEntity.ok().body(attendanceService.getAllAttendance());
     }
 
+    @PostMapping("/scan")
+    public ResponseEntity<AttendanceResponseDTO> scanQrCode(@Valid @RequestBody QrScanRequestDTO qrScanRequestDTO){
+        Long sessionId = qrTokenService.validateTokenAndGetSesionId(qrScanRequestDTO.token());
+
+        AttendanceCreateDTO createDTO = new AttendanceCreateDTO(
+                sessionId,
+                qrScanRequestDTO.userId()
+        );
+        return ResponseEntity.ok().body(attendanceService.createAttendance(createDTO));
+    }
+
+    @PostMapping("/gps")
+    public ResponseEntity<AttendanceResponseDTO> checkInGps(@Valid @RequestBody AttendanceGpsCreateDTO attendanceGpsCreateDTO) {
+        return ResponseEntity.ok().body(attendanceService.createGpsAttendance(attendanceGpsCreateDTO));
+    }
 }

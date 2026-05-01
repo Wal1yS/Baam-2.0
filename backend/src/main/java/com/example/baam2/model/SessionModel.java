@@ -21,8 +21,6 @@ public class SessionModel {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private UserModel owner;
-
-    private String qrToken;
     private boolean isActive;
     private LocalDateTime createAt;
 
@@ -30,3 +28,5 @@ public class SessionModel {
     private Double longitude;
     private Double allowedRadius;
 }
+
+
